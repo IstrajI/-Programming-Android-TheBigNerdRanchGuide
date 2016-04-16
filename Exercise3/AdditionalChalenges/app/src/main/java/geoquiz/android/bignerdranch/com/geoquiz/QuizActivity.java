@@ -30,9 +30,11 @@ public class QuizActivity extends Activity {
     private TextView mQuestionTextView;
     private Button mCheatButton;
     private boolean mIsCheater;
+    private boolean [] mIsCheatedQuestionBank = {false, false, false, false, false};
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String KEY_CHEATED_BANK = "cheated_bank";
 
     private TrueFalse[] mQuestionBank = new TrueFalse[]{
             new TrueFalse(R.string.question_oceans, true),
@@ -43,14 +45,10 @@ public class QuizActivity extends Activity {
     };
 
     private int mCurrentIndex = 0;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     private GoogleApiClient client;
 
-    private void updateQuestion(boolean isCheater) {
-        mIsCheater = isCheater;
+    private void updateQuestion() {
+        mIsCheater = mIsCheatedQuestionBank[mCurrentIndex];
         int question = mQuestionBank[mCurrentIndex].getQuestion();
         mQuestionTextView.setText(question);
     }
@@ -75,9 +73,8 @@ public class QuizActivity extends Activity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
-            System.out.println(savedInstanceState.getBoolean(CheatActivity.EXTRA_ANSWER_SHOWN));
+            mIsCheatedQuestionBank = savedInstanceState.getBooleanArray(KEY_CHEATED_BANK);
             mIsCheater = savedInstanceState.getBoolean(CheatActivity.EXTRA_ANSWER_SHOWN, false);
-            System.out.println("pop" + mIsCheater);
         }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -102,17 +99,19 @@ public class QuizActivity extends Activity {
         mPrevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mIsCheatedQuestionBank[mCurrentIndex] = mIsCheater;
                 mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
                 mCurrentIndex = mCurrentIndex < 0 ? mQuestionBank.length + mCurrentIndex : mCurrentIndex;
-                updateQuestion(false);
+                updateQuestion();
             }
         });
 
         View.OnClickListener nextQuestionOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mIsCheatedQuestionBank[mCurrentIndex] = mIsCheater;
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-                updateQuestion(false);
+                updateQuestion();
             }
         };
         mQuestionTextView.setOnClickListener(nextQuestionOnClickListener);
@@ -132,10 +131,7 @@ public class QuizActivity extends Activity {
         });
 
 
-        updateQuestion(mIsCheater);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        updateQuestion();
     }
 
     @Override
@@ -151,6 +147,7 @@ public class QuizActivity extends Activity {
         System.out.println("pish " + mIsCheater);
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
         savedInstanceState.putBoolean(CheatActivity.EXTRA_ANSWER_SHOWN, mIsCheater);
+        savedInstanceState.putBooleanArray(KEY_CHEATED_BANK,mIsCheatedQuestionBank);
     }
 
     @Override

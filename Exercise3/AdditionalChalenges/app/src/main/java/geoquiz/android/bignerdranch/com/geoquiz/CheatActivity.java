@@ -49,7 +49,7 @@ public class CheatActivity extends Activity {
         });
     }
 
-    public void onSavedInstanceState(Bundle saveInstanceState) {
+    public void onSaveInstanceState(Bundle saveInstanceState) {
         super.onSaveInstanceState(saveInstanceState);
         saveInstanceState.putBoolean(EXTRA_ANSWER_SHOWN, mIsCheater);
     }

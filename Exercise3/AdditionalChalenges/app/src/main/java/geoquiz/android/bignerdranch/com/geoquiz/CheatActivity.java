@@ -15,7 +15,6 @@ public class CheatActivity extends Activity {
             "com.bignerdranch.android.geoquiz.answer_is_true";
     public static String EXTRA_ANSWER_SHOWN =
             "com.bignerdranch.android.geoquiz.answer_shown";
-    public static String KEY_IS_CHEATER = "is_cheater";
 
     private boolean mAnswerIsTrue;
 
@@ -28,7 +27,7 @@ public class CheatActivity extends Activity {
         setContentView(R.layout.activity_cheat);
 
         if (savedInstanceState != null) {
-            mIsCheater = savedInstanceState.getBoolean(KEY_IS_CHEATER, false);
+            mIsCheater = savedInstanceState.getBoolean(EXTRA_ANSWER_SHOWN, false);
         }
 
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
@@ -52,7 +51,7 @@ public class CheatActivity extends Activity {
 
     public void onSavedInstanceState(Bundle saveInstanceState) {
         super.onSaveInstanceState(saveInstanceState);
-        saveInstanceState.putBoolean(KEY_IS_CHEATER, mIsCheater);
+        saveInstanceState.putBoolean(EXTRA_ANSWER_SHOWN, mIsCheater);
     }
 
     private void setAnswerShowResult(boolean isAnswerShown) {

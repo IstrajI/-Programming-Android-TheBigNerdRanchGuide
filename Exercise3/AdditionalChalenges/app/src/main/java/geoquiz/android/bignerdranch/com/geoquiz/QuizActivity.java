@@ -49,8 +49,8 @@ public class QuizActivity extends Activity {
      */
     private GoogleApiClient client;
 
-    private void updateQuestion() {
-        mIsCheater = false;
+    private void updateQuestion(boolean isCheater) {
+        mIsCheater = isCheater;
         int question = mQuestionBank[mCurrentIndex].getQuestion();
         mQuestionTextView.setText(question);
     }
@@ -75,6 +75,9 @@ public class QuizActivity extends Activity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            System.out.println(savedInstanceState.getBoolean(CheatActivity.EXTRA_ANSWER_SHOWN));
+            mIsCheater = savedInstanceState.getBoolean(CheatActivity.EXTRA_ANSWER_SHOWN, false);
+            System.out.println("pop" + mIsCheater);
         }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -101,7 +104,7 @@ public class QuizActivity extends Activity {
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
                 mCurrentIndex = mCurrentIndex < 0 ? mQuestionBank.length + mCurrentIndex : mCurrentIndex;
-                updateQuestion();
+                updateQuestion(false);
             }
         });
 
@@ -109,7 +112,7 @@ public class QuizActivity extends Activity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-                updateQuestion();
+                updateQuestion(false);
             }
         };
         mQuestionTextView.setOnClickListener(nextQuestionOnClickListener);
@@ -129,7 +132,7 @@ public class QuizActivity extends Activity {
         });
 
 
-        updateQuestion();
+        updateQuestion(mIsCheater);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -145,29 +148,14 @@ public class QuizActivity extends Activity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
+        System.out.println("pish " + mIsCheater);
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putBoolean(CheatActivity.EXTRA_ANSWER_SHOWN, mIsCheater);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Log.d(TAG, "onStart() called");
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Quiz Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://geoquiz.android.bignerdranch.com.geoquiz/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
     @Override
@@ -185,23 +173,7 @@ public class QuizActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Quiz Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://geoquiz.android.bignerdranch.com.geoquiz/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
         Log.d(TAG, "onStop() called");
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.disconnect();
     }
 
     @Override
